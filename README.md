@@ -51,9 +51,10 @@ STA 129    ; Guarda em endereço 129
 4. Preparação para a Multiplicação
 
 ```assembly
-STA 131    ; Usa endereço 131 como contador
-LDI 0
-STA 130    ; Zera resultado (endereço 130)
+        LDA 129    ; Carrega o segundo número (contador)
+        STA 131    ; Usa endereço 131 como contador
+        LDI 0
+        STA 130    ; Zera resultado (endereço 130)
 ```
 
 · STA 131: O segundo número já está no acumulador, então é armazenado no endereço 131 para servir como contador
@@ -64,15 +65,16 @@ STA 130    ; Zera resultado (endereço 130)
 
 ```assembly
 LOOP:
-    LDA 131    ; Pega contador
-    SUB 1      ; Diminui 1
-    JZ FIM     ; Se zero, acabou
-    STA 131    ; Atualiza contador
-    
-    LDA 130    ; Pega resultado
-    ADD 128    ; Soma primeiro número
-    STA 130    ; Guarda resultado
-    JMP LOOP   ; Repete
+     LDA 131    ; Pega o contador
+        SUB 1      ; Diminui 1
+        STA 131    ; Atualiza o contador
+        JZ FIM     ; Se contador for zero, acabou
+        
+        LDA 130    ; Pega o resultado acumulado
+        ADD 128    ; Soma o primeiro número
+        STA 130    ; Atualiza o resultado
+        
+        JMP LOOP   ; Repete o loop
 ```
 
 Este loop implementa a multiplicação como uma série de adições:
@@ -88,9 +90,10 @@ Este loop implementa a multiplicação como uma série de adições:
 
 ```assembly
 FIM:
-    LDA 130    ; Pega resultado
-    OUT 0      ; Mostra no display
-    HLT        ; Termina
+      LDA 130    ; Pega o resultado final
+      OUT 0      ; Mostra no display
+      HLT        ; Termina
+
 ```
 
 · Carrega o resultado final do endereço 130
