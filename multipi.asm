@@ -1,41 +1,58 @@
 ;---------------------------------------------------
-; Programa: Multiplicação de dois números
+; Programa: Multiplicação de dois números 
 ; Autor: Thamires Vitoria Muniz da Silva
-; Data: 17-09-2025
+; Data: 18-09-2025
 ;---------------------------------------------------
+; Descrição: Multiplica dois números usando somas sucessivas
+; Entrada: Dois números via teclado
+; Saída: Resultado da multiplicação no visor
 
-; Programa que multiplica dois números
-        ORG 0
+ORG 0
 
-; Pede primeiro número
-        IN 0       ; Lê teclado
-        STA 128    ; Guarda em endereço 128
+; Variáveis
+NUM1:    DB 0  ; Multiplicando
+NUM2:    DB 0    ; Multiplicador (contador)
+RESULT:  DB 0    ; Resultado da multiplicação
 
-; Pede segundo número  
-        IN 0       ; Lê teclado
-        STA 129    ; Guarda em endereço 129
+INICIO:
+    ; Pede e armazena o primeiro número (multiplicando)
+    IN 0         ; Lê do teclado
+    OUT 0        ; Mostra no visor (feedback)
+    STA NUM1     ; Armazena em NUM1
 
-; Prepara multiplicação
-        LDA 129    ; Carrega o segundo número (contador)
-        STA 131    ; Usa endereço 131 como contador
-        LDI 0
-        STA 130    ; Zera resultado (endereço 130)
+    ; Pede e armazena o segundo número (multiplicador)
+    IN 0         ; Lê do teclado
+    OUT 0        ; Mostra no visor (feedback)
+    STA NUM2     ; Armazena em NUM2
 
-; Loop de multiplicação
+    ; Inicializa o resultado com 0
+    LDI 0
+    STA RESULT
+
+    ; Verifica se algum número é zero (multiplicação por zero = zero)
+    LDA NUM1
+    JZ FIM       ; Se NUM1 = 0, vai para FIM
+    LDA NUM2
+    JZ FIM       ; Se NUM2 = 0, vai para FIM
+
 LOOP:
-        LDA 131    ; Pega o contador
-        SUB 1      ; Diminui 1
-        STA 131    ; Atualiza o contador
-        JZ FIM     ; Se contador for zero, acabou
-        
-        LDA 130    ; Pega o resultado acumulado
-        ADD 128    ; Soma o primeiro número
-        STA 130    ; Atualiza o resultado
-        
-        JMP LOOP   ; Repete o loop
+    ; Soma NUM1 ao RESULT
+    LDA RESULT
+    ADD NUM1
+    STA RESULT
 
-; Mostra resultado
+    ; Decrementa o contador (NUM2)
+    LDA NUM2
+    SUB 1
+    STA NUM2
+
+    ; Verifica se ainda precisa continuar (NUM2 > 0)
+    JZ FIM       ; Se NUM2 = 0, termina
+    JMP LOOP     ; Senão, continua somando
+
 FIM:
-        LDA 130    ; Pega o resultado final
-        OUT 0      ; Mostra no display
-        HLT        ; Termina
+    ; Mostra o resultado
+    LDA RESULT
+    OUT 0
+    HLT          ; Termina o programa
+
