@@ -4,124 +4,168 @@ Este projeto implementa uma operação de multiplicação de dois números no si
 
 ## 📋 Descrição
 
-O código realiza a multiplicação de dois números (NUM1 e NUM2) utilizando o método de soma sucessiva, aproveitando a arquitetura básica do processador Neander.
+O código realiza a multiplicação de dois números (`NUM1` e `NUM2`) utilizando o método de soma sucessiva. Ele inclui verificações para garantir a operação correta, mesmo quando um dos números é zero.
 
-## 📚 Aluna 
+## 📚 Aluna
 
-Thamires Vitoria Muniz da Silva 
+Thamires Vitoria Muniz da Silva
 Turma: EO3
 
 ## 🧮 Explicação do Programa de Multiplicação em Assembly
 
-Este documento explica o funcionamento de um programa em assembly que realiza a multiplicação de dois números inseridos pelo usuário.
+Este documento explica o funcionamento de um programa em assembly que realiza a multiplicação de dois números inseridos pelo usuário através de somas sucessivas.
 
 ## 🖥️ Visão Geral do Programa
 
-O programa implementa uma multiplicação através de adições sucessivas. Ele solicita dois números ao usuário, realiza a multiplicação e exibe o resultado.
+O programa solicita dois números, realiza a multiplicação através de adições repetidas, incluindo uma verificação inicial para casos de multiplicação por zero, e exibe o resultado final.
 
-Estrutura do Código
+-----
 
-1. Diretiva de Origem
+### Estrutura do Código
 
-```assembly
-      ORG 0
-```
+1.  **Diretiva de Origem**
 
-· Define que o programa deve começar no endereço de memória 0.
-
-2. Leitura do Primeiro Número
+<!-- end list -->
 
 ```assembly
-IN 0       ; Lê teclado
-STA 128    ; Guarda em endereço 128
+    ORG 0
 ```
 
-· IN 0: Lê um valor do dispositivo de entrada (teclado) e armazena no acumulador
-· STA 128: Armazena o valor do acumulador no endereço de memória 128
+  - Define que o programa deve começar no endereço de memória 0.
 
-3. Leitura do Segundo Número
+<!-- end list -->
+
+2.  **Variáveis**
+
+<!-- end list -->
 
 ```assembly
-IN 0       ; Lê teclado  
-STA 129    ; Guarda em endereço 129
+NUM1:   DB 0    ; Multiplicando
+NUM2:   DB 0    ; Multiplicador (contador)
+RESULT: DB 0    ; Resultado da multiplicação
 ```
 
-· Similar ao anterior, mas armazena o segundo número no endereço 129
+  - Declara três variáveis na memória, inicializadas com 0, para armazenar os números de entrada, o contador do loop e o resultado do cálculo.
 
-4. Preparação para a Multiplicação
+<!-- end list -->
+
+3.  **Leitura dos Números**
+
+<!-- end list -->
 
 ```assembly
-        LDA 129    ; Carrega o segundo número (contador)
-        STA 131    ; Usa endereço 131 como contador
-        LDI 0
-        STA 130    ; Zera resultado (endereço 130)
+    ; Pede e armazena o primeiro número (multiplicando)
+    IN 0
+    OUT 0
+    STA NUM1
+
+    ; Pede e armazena o segundo número (multiplicador)
+    IN 0
+    OUT 0
+    STA NUM2
 ```
 
-· STA 131: O segundo número já está no acumulador, então é armazenado no endereço 131 para servir como contador
-· LDI 0: Carrega o valor 0 imediatamente no acumulador
-· STA 130: Armazena 0 no endereço 130, que será usado para acumular o resultado
+  - `IN 0`: Lê um valor do dispositivo de entrada (teclado/alavancas) e armazena no acumulador.
+  - `OUT 0`: Exibe o número inserido no visor, servindo como feedback visual.
+  - `STA`: Armazena o valor do acumulador nas variáveis `NUM1` e `NUM2`.
 
-5. Loop de Multiplicação
+<!-- end list -->
+
+4.  **Preparação para a Multiplicação**
+
+<!-- end list -->
+
+```assembly
+    ; Inicializa o resultado com 0
+    LDI 0
+    STA RESULT
+
+    ; Verifica se algum número é zero
+    LDA NUM1
+    JZ FIM
+    LDA NUM2
+    JZ FIM
+```
+
+  - `LDI 0`: Carrega o valor 0 imediatamente no acumulador.
+  - `STA RESULT`: Zera a variável `RESULT`.
+  - As instruções `LDA` e `JZ` verificam se `NUM1` ou `NUM2` são zero. Se forem, o programa pula o loop e vai direto para o final, onde o resultado (0) já está armazenado.
+
+<!-- end list -->
+
+5.  **Loop de Multiplicação**
+
+<!-- end list -->
 
 ```assembly
 LOOP:
-     LDA 131    ; Pega o contador
-        SUB 1      ; Diminui 1
-        STA 131    ; Atualiza o contador
-        JZ FIM     ; Se contador for zero, acabou
-        
-        LDA 130    ; Pega o resultado acumulado
-        ADD 128    ; Soma o primeiro número
-        STA 130    ; Atualiza o resultado
-        
-        JMP LOOP   ; Repete o loop
+    ; Soma NUM1 ao RESULT
+    LDA RESULT
+    ADD NUM1
+    STA RESULT
+
+    ; Decrementa o contador (NUM2)
+    LDA NUM2
+    SUB 1
+    STA NUM2
+
+    ; Verifica se ainda precisa continuar (NUM2 > 0)
+    JZ FIM
+    JMP LOOP
 ```
 
 Este loop implementa a multiplicação como uma série de adições:
 
-1. Carrega o contador (segundo número)
-2. Decrementa o contador em 1
-3. Se o contador chegar a zero, pula para o final
-4. Atualiza o contador na memória
-5. Adiciona o primeiro número ao resultado acumulado
-6. Repete o processo
+1.  Adiciona `NUM1` ao valor atual de `RESULT` e atualiza `RESULT`.
 
-6. Exibição do Resultado e Término
+2.  Carrega o valor de `NUM2` no acumulador, subtrai 1 e atualiza `NUM2`.
+
+3.  `JZ FIM`: Se `NUM2` chegou a zero, o loop termina e o programa salta para `FIM`.
+
+4.  `JMP LOOP`: Se `NUM2` ainda for maior que zero, o loop continua.
+
+5.  **Exibição do Resultado e Término**
+
+<!-- end list -->
 
 ```assembly
 FIM:
-      LDA 130    ; Pega o resultado final
-      OUT 0      ; Mostra no display
-      HLT        ; Termina
-
+    LDA RESULT
+    OUT 0
+    HLT
 ```
 
-· Carrega o resultado final do endereço 130
-· Exibe o resultado no dispositivo de saída (display)
-· Para a execução do programa
+  - `LDA RESULT`: Carrega o resultado final da variável `RESULT` para o acumulador.
+  - `OUT 0`: Exibe o resultado no visor.
+  - `HLT`: Para a execução do programa.
 
-Fluxo de Dados na Memória
+-----
 
-Endereço Conteúdo Propósito
-128 Primeiro número Valor a ser somado repetidamente
-129 Segundo número Valor original do multiplicador
-130 Resultado Acumula o resultado da multiplicação
-131 Contador Controla as iterações do loop
+### Fluxo de Dados na Memória
 
-Exemplo de Execução
+| Endereço  | Conteúdo          | Propósito                               |
+|-----------|-------------------|-----------------------------------------|
+| `NUM1`    | Primeiro número   | Valor a ser somado repetidamente.       |
+| `NUM2`    | Segundo número    | Serve como contador para o loop.        |
+| `RESULT`  | Resultado         | Acumula o resultado da multiplicação.   |
+
+### Exemplo de Execução
 
 Se o usuário inserir:
 
-· Primeiro número: 4
-· Segundo número: 3
+  - **Primeiro número:** 4
+  - **Segundo número:** 3
 
 O programa fará:
 
-1. Armazenará 4 no endereço 128
-2. Armazenará 3 no endereço 129 (e também no 131)
-3. Executará o loop 3 vezes, somando 4+4+4
-4. Resultado final: 12, que será exibido
+1.  Armazenará `4` em `NUM1` e `3` em `NUM2`.
+2.  O loop executará 3 vezes.
+      - 1ª volta: `RESULT` = $0 + 4 = 4$. `NUM2` = 2.
+      - 2ª volta: `RESULT` = $4 + 4 = 8$. `NUM2` = 1.
+      - 3ª volta: `RESULT` = $8 + 4 = 12$. `NUM2` = 0.
+3.  `NUM2` é 0, o loop termina.
+4.  O resultado final, **12**, será exibido no visor.
 
----
+-----
 
 Desenvolvido por Thamires Vitoria - Demonstrando operações aritméticas básicas em assembly Neander.
